@@ -21,3 +21,15 @@ Create a new JavaScript file for your class, let's call it "MyClass.js":
       
       module.exports = MyClass;
 
+In this example, we've defined a simple MyClass class with a constructor that takes a name as a parameter and a sayHello method.
+
+Now, in another JavaScript file where you want to use this class, you can require and create instances of it:
+            // main.js
+            
+            const MyClass = require('./MyClass');
+            
+            const instance1 = new MyClass('Alice');
+            const instance2 = new MyClass('Bob');
+            
+            instance1.sayHello(); // Output: Hello, Alice!
+            instance2.sayHello(); // Output: Hello, Bob!
