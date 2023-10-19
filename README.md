@@ -33,3 +33,7 @@ Now, in another JavaScript file where you want to use this class, you can requir
             
             instance1.sayHello(); // Output: Hello, Alice!
             instance2.sayHello(); // Output: Hello, Bob!
+
+In "main.js," we import the MyClass module using require('./MyClass'), create instances of the class, and call the sayHello method on each instance.
+
+This is a basic example of modularizing a class in Node.js. You can expand on this by adding more methods and properties to your class, as well as organizing your code into multiple modules for a larger project.
