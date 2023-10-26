@@ -1,10 +1,10 @@
 const express = require("express")
 const router = express.Router()
-const {userWelcome, register, login, logout } = require("../Controllers/user.controller")
+const {userWelcome, login, logout, register } = require("../Controllers/user.controller")
 
 router.get("/", userWelcome)
-router.get("/api/register", register)
-router.get("/api/login", login)
-router.get("/api/logout", logout)
+router.post("/api/register", register)
+router.post("/api/login", login)
+router.post("/api/logout", logout)
 
 module.exports = router;
