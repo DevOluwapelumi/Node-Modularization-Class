@@ -1,41 +1,53 @@
-const userModel = require('../Models/user.model')
+const setDatabase = require ('../Modals/user.modal')
 
-const userWelcome = (req, res) => {
-  res.send([{ Message: "Welcome to Our Website" }]);
+const backendSignup = (req, res) => {
+  console.log('Begin backend for signup');
+  console.log(req.body);
+    // Check if the request body contains the expected data
+    if (!req.body || !req.body.username || !req.body.email || !req.body.password) {
+      console.log('Missing data in the request body');
+      return res.status(400).send({ status: false, message: "Invalid request data" });
+    }  
+  let saveUser = new setDatabase(req.body)
+  saveUser.save()
+    .then(() => {
+    console.log(req.body);
+    console.log('User saved successfully');
+    res.send({ status: false, message: "Successfully signed up" });
+  }).catch((err) => {
+    console.error('Error occurred', err);
+    res.status(500).send({ status: false, message: "Can't sign up" });
+  });
+};
+
+const backendLogin = (req, res) => {
+  console.log('Begin backend for login');
+  const { email, password, username } = req.body
+  setDatabase.findOne({ email: email }).then(async (user) => {
+    console.log(user);
+    if (user) {
+      try {
+        const result = await user.comparePassword(password);
+        if (result) {
+          console.log('User found');
+          console.log(user);
+          res.send({ status: true, message: "User found", details: user });
+        } else {
+          res.send({ status: false, message: "Password does not match" });
+        }
+      } catch (err) {
+        console.log('Error occurred during password comparison:', err);
+        res.send({ status: false, message: "Error occurred" });
+      }
+    } else {
+      console.log("User not found");
+      res.send({ status: false, message: "User not found" });
+    }
+  }).catch((err) => {
+    console.log('error occur', err);
+  });
 };
 
 
 
-const register = (req,res)=>{
-  let form = new userModel(req.body)
-  let data = new userModel({
-    fullname:"wale",
-    email:"debanjo2@gmail.com",
-    username:"vickydev",
-    password:"fish",
-  })
-  console.log(form);
-  form.save()
-    .then((user) => {
-      res.status(201).json({ message: 'User registered successfully' });
-      res.send({status:true , message:'User registered successfully'})
-    })
-    .catch((error) => {
-      res.status(500).json({ message: 'Error creating user' });
-        res.send({status:false , message:'Error creating user'})
-    });
-
-}
-
-const login = (req, res) => {
-  res.send([{ Message: "Not Authorized : No token" }]);
-  console.log("Not Authorized : No token" )
-};
-
-const logout = (req, res) => {
-  res.send([{ Message: "Log out SuccessFully:" }]);
-  console.log("Log out SuccessFully:");
-};
-
-
-module.exports = { userWelcome, register, login , logout};
+module.exports = {backendSignup, backendLogin}
