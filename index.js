@@ -6,7 +6,7 @@ const env = require ('dotenv').config()
 const PORT = process.env.PORT
 const URI= process.env.URI
 const cors = require("cors")
-const userRoute = require("./Routes/userRoutes")
+const userRoutes = require("./Routes/userRoutes")
 
  
 mongoose.connect(URI)

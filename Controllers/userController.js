@@ -1,4 +1,4 @@
-// const User = require('../Models/userModel');
+const User = require('../Models/userModel');
 
 const userModel = require("../Models/userModel");
 const jwt = require("jsonwebtoken")
@@ -10,7 +10,7 @@ cloudinary.config({
     api_secret: process.env.API_SECRET
 });
 
-module.exports.upload = (req,res) => {
+const upload = (req,res) => {
   // console.log(req.body.file)
   let uploadedFile = req.body.file;
 
@@ -33,18 +33,39 @@ const userWelcome = (req, res) => {
     console.log('welcome page');
 }
 
-const registerUser = (req, res) => {
+const registerUser = async (req, res) => {
     // console.log("user registered");
     // console.log(req.body);
-    let user = new userModel(req.body)
-    user.save().then(() => {
-        // console.log(user);
-        console.log("User saved");
-        res.send({ status: true, message: "user saved successfully" })
-    }).catch((err) => {
-        console.log("Error creating user", err);
-        res.send({ status: false, message: "user not saved" })
-    })
+    // let user = new userModel(req.body)
+    // user.save().then(() => {
+    //     // console.log(user);
+    //     console.log("User saved");
+    //     res.send({ status: true, message: "user saved successfully" })
+    // }).catch((err) => {
+    //     console.log("Error creating user", err);
+    //     res.send({ status: false, message: "user not saved" })
+    // })
+    // console.log(req.body);
+    const { firstName, phone, email, password } = req.body
+    const user = await userModel.findOne({ email })
+    console.log(user);
+    if (user) {
+        res.json({
+            message: "Email already exist"
+        })
+    } else if (!user) {
+        let newUser = new userModel({ firstName, phone, email, password })
+        console.log(newUser);
+       await newUser.save().then(() => {
+            // console.log(user);
+            console.log("User saved");
+            res.send({ status: true, message: "user saved successfully" })
+        }).catch((err) => {
+            console.log("Error creating user", err);
+            res.send({ status: false, message: "user not saved" })
+        })
+        // console.log(req.body);
+    }
 }
 
 const login = async (req, res) => {
@@ -64,19 +85,23 @@ const login = async (req, res) => {
         })
     // console.log(req.body);
 }
-const dashboard = (req, res)=>{
+const dashboard = (req, res) => {
+
+    if (!req.headers.authorization) {
+        return res.status(401).json({ status: false, message: "Authorization header missing" });
+    }
     let token = req.headers.authorization.split(" ")[1]
     console.log(token);
-    // console.log("i dey work");
-    jwt.verify(token, secret, ((err, result)=>{
-        if(err){
-            res.send({status: false, message: "wrong token"})
+    jwt.verify(token, secret, ((err, result) => {
+        if (err) {
+            res.send({ status: false, message: "wrong token" })
         }
-        else{
-            res.send({status: true, message: "Success token correct", result})
+        else {
+            res.send({ status: true, message: "Success token correct", result })
         }
     }))
-}
+};
 
 
-module.exports = { userWelcome, registerUser, login, uploadfile, dashboard }
+
+module.exports = { userWelcome, registerUser, login, dashboard, upload }
